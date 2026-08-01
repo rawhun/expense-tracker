@@ -217,7 +217,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
             </DialogHeader>
             {parsedData && (
               <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Amount (₹)</Label>
                     <Input
@@ -234,7 +234,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Category</Label>
                     <Input
