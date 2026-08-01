@@ -100,7 +100,7 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
 
           try {
             if (functionName === "log_expense") {
-              const { error } = await supabase.from('expenses').insert({
+              const { error } = await supabase.from('expenses').insert([{
                 user_id: user.id,
                 amount: Number(args.amount),
                 merchant: args.merchant || 'Unknown',
@@ -110,17 +110,17 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
                 confidence: 1.0,
                 is_recurring: false,
                 is_impulse: false
-              });
+              }]);
               if (error) throw error;
               toolResult = `Successfully logged expense: ${args.merchant} for ${args.amount} ${currency}`;
             } else if (functionName === "create_goal") {
-              const { error } = await supabase.from('goals').insert({
+              const { error } = await supabase.from('goals').insert([{
                 user_id: user.id,
                 title: args.title,
                 target_amount: Number(args.target_amount),
                 current_amount: 0,
                 status: 'active'
-              });
+              }]);
               if (error) throw error;
               toolResult = `Successfully created goal: ${args.title} for ${args.target_amount} ${currency}`;
             } else {
