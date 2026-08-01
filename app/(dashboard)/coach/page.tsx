@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, User, Sparkles, Loader2 } from "lucide-react";
+import { Send, Bot, User, Sparkles, Loader2, Trash2 } from "lucide-react";
 
 type Message = {
   id: string;
@@ -13,20 +13,48 @@ type Message = {
 };
 
 export default function AICoachPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hello again! I noticed you saved slightly more than last week. Have any questions about your budget or want to set a new goal today?"
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMsg, setInputMsg] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const saved = localStorage.getItem("habitcoach_chat_history");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 0) {
+          setMessages(parsed);
+          setIsInitializing(false);
+          return;
+        }
+      } catch (e) {
+        // parsing error, fallback to new chat
+      }
+    }
+    
+    // Fetch dynamic greeting if no history
+    fetch("/api/ai/greeting")
+      .then(res => res.json())
+      .then(data => {
+        if (data.greeting) {
+          setMessages([{ id: Date.now().toString(), role: "assistant", content: data.greeting }]);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsInitializing(false));
+  }, []);
+
+  useEffect(() => {
+    if (!isInitializing && messages.length > 0) {
+      localStorage.setItem("habitcoach_chat_history", JSON.stringify(messages));
+    }
+  }, [messages, isInitializing]);
+
+  useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+  }, [messages, isTyping, isInitializing]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,18 +91,46 @@ export default function AICoachPage() {
     }
   };
 
+  const handleClearChat = () => {
+    localStorage.removeItem("habitcoach_chat_history");
+    setIsInitializing(true);
+    setMessages([]);
+    fetch("/api/ai/greeting")
+      .then(res => res.json())
+      .then(data => {
+        if (data.greeting) {
+          setMessages([{ id: Date.now().toString(), role: "assistant", content: data.greeting }]);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsInitializing(false));
+  };
+
   return (
     <DashboardLayout>
-      <div className="flex flex-col h-[calc(100vh-120px)] w-full max-w-4xl mx-auto rounded-3xl border border-border/50 overflow-hidden shadow-sm glass">
+      <div className="flex flex-col h-[calc(100vh-120px)] w-full max-w-4xl mx-auto rounded-3xl border border-border/50 overflow-hidden shadow-sm glass relative">
+        
+        {isInitializing && (
+          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground animate-pulse">Waking up HabitCoach...</p>
+          </div>
+        )}
+
         {/* Header */}
-        <div className="flex items-center p-4 border-b bg-card/60 backdrop-blur-sm">
-          <div className="bg-primary/10 p-2 rounded-full mr-3">
-            <Sparkles className="w-5 h-5 text-primary" />
+        <div className="flex items-center justify-between p-4 border-b bg-card/60 backdrop-blur-sm">
+          <div className="flex items-center">
+            <div className="bg-primary/10 p-2 rounded-full mr-3">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-lg">HabitCoach Assistant</h2>
+              <p className="text-xs text-muted-foreground">Always here to support your goals</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-semibold text-lg">HabitCoach Assistant</h2>
-            <p className="text-xs text-muted-foreground">Always here to support your goals</p>
-          </div>
+          <Button variant="ghost" size="sm" onClick={handleClearChat} className="text-muted-foreground hover:text-destructive" title="Clear Chat History">
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* Chat Area */}
@@ -119,13 +175,13 @@ export default function AICoachPage() {
               className="flex-1 rounded-full px-6 bg-card"
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
-              disabled={isTyping}
+              disabled={isTyping || isInitializing}
             />
             <Button 
               type="submit" 
               size="icon" 
               className="rounded-full absolute right-1 top-1 h-8 w-8"
-              disabled={!inputMsg.trim() || isTyping}
+              disabled={!inputMsg.trim() || isTyping || isInitializing}
             >
               <Send className="w-4 h-4" />
             </Button>
