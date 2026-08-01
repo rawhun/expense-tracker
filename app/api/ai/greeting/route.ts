@@ -11,11 +11,21 @@ export async function GET() {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     // Fetch user profile for name and currency
-    const { data: profile } = await supabase
+    let { data: profile } = await supabase
       .from('users')
       .select('name, currency')
       .eq('id', user.id)
       .single();
+
+    if (!profile) {
+      await supabase.from('users').insert({
+        id: user.id,
+        email: user.email,
+        name: user.email?.split('@')[0] || 'User',
+        currency: 'USD'
+      });
+      profile = { name: user.email?.split('@')[0] || 'User', currency: 'USD' };
+    }
 
     // Fetch this month's expenses
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();

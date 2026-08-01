@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const { error } = await supabase
       .from('users')
-      .update({ currency })
+      .upsert({ id: user.id, currency, email: user.email })
       .eq('id', user.id);
 
     if (error) throw new Error(error.message);
