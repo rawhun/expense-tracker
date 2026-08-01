@@ -26,12 +26,12 @@ export async function GET() {
       .gte('date', startOfMonth);
 
     const totalSpent = expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
-    const name = profile?.name || "there";
     const currency = profile?.currency || "USD";
+    const nameStr = profile?.name ? `The user's name is ${profile.name}. Greet them by name.` : `You do not know the user's name. Greet them with a friendly "Hi there!". Do NOT use placeholders like [username].`;
 
     const prompt = `You are HabitCoach, a friendly financial AI. 
 Generate a short (1-2 sentences max), highly personalized, and enthusiastic opening greeting for the user.
-The user's name is ${name}.
+${nameStr}
 So far this month, they have spent ${totalSpent} ${currency}.
 Do not ask how you can help (the chat interface already implies they can ask questions). Just give a warm welcome and a quick encouraging observation about their spending.`;
 
