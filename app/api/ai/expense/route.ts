@@ -46,7 +46,8 @@ Return this exact JSON structure:
     });
 
     const raw = completion.choices[0]?.message?.content || "{}";
-    const parsedExpense = JSON.parse(raw);
+    const cleanedRaw = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const parsedExpense = JSON.parse(cleanedRaw);
 
     if (!parsedExpense.amount || !parsedExpense.merchant) {
       throw new Error("Could not extract expense details");
