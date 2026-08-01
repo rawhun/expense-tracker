@@ -79,7 +79,7 @@ export default async function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 max-w-6xl w-full mx-auto">
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
