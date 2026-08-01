@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -128,6 +129,8 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
               }]);
               if (error) throw error;
               toolResult = `Successfully logged expense: ${args.merchant} for ${args.amount} ${currency}`;
+              revalidatePath('/expenses');
+              revalidatePath('/dashboard');
             } else if (functionName === "create_goal") {
               const { error } = await supabase.from('goals').insert([{
                 user_id: user.id,
@@ -138,6 +141,8 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
               }]);
               if (error) throw error;
               toolResult = `Successfully created goal: ${args.title} for ${args.target_amount} ${currency}`;
+              revalidatePath('/goals');
+              revalidatePath('/dashboard');
             } else {
               toolResult = "Unknown tool.";
             }
