@@ -37,6 +37,20 @@ export default function SettingsClient({ name, email, currency }: Props) {
     }
   };
 
+  const handleSavePreferences = async () => {
+    try {
+      const res = await fetch("/api/settings/preferences", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currency: selectedCurrency }),
+      });
+      if (!res.ok) throw new Error("Failed to save preferences");
+      toast.success("Preferences saved successfully!");
+    } catch {
+      toast.error("Failed to update preferences.");
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-8 flex-1 max-w-3xl">
@@ -104,7 +118,7 @@ export default function SettingsClient({ name, email, currency }: Props) {
             </div>
           </CardContent>
           <CardFooter className="border-t border-border/50 pt-4">
-            <Button onClick={() => toast.success("Preferences saved!")}>Update Preferences</Button>
+            <Button onClick={handleSavePreferences}>Update Preferences</Button>
           </CardFooter>
         </Card>
 

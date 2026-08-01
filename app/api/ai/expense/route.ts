@@ -49,9 +49,8 @@ Return this exact JSON structure:
     const cleanedRaw = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
     const parsedExpense = JSON.parse(cleanedRaw);
 
-    if (!parsedExpense.amount || !parsedExpense.merchant) {
-      throw new Error("Could not extract expense details");
-    }
+    if (!parsedExpense.amount) parsedExpense.amount = 0;
+    if (!parsedExpense.merchant) parsedExpense.merchant = "Unknown Merchant";
 
     return NextResponse.json({ success: true, data: parsedExpense });
 
