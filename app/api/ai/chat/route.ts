@@ -99,10 +99,12 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
           let toolResult = "";
 
           try {
+            const parseAmount = (val: any) => parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
+
             if (functionName === "log_expense") {
               const { error } = await supabase.from('expenses').insert([{
                 user_id: user.id,
-                amount: Number(args.amount),
+                amount: parseAmount(args.amount),
                 merchant: args.merchant || 'Unknown',
                 category: args.category || 'General',
                 notes: args.notes || null,
@@ -117,7 +119,7 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
               const { error } = await supabase.from('goals').insert([{
                 user_id: user.id,
                 title: args.title,
-                target_amount: Number(args.target_amount),
+                target_amount: parseAmount(args.target_amount),
                 current_amount: 0,
                 status: 'active'
               }]);

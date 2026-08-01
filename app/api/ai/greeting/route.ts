@@ -33,6 +33,7 @@ export async function GET() {
 Generate a short (1-2 sentences max), highly personalized, and enthusiastic opening greeting for the user.
 ${nameStr}
 So far this month, they have spent ${totalSpent} ${currency}.
+IMPORTANT: Always format money with the exact currency code provided (${currency}). Do NOT use the dollar sign ($) unless the currency is explicitly USD.
 Do not ask how you can help (the chat interface already implies they can ask questions). Just give a warm welcome and a quick encouraging observation about their spending.`;
 
     const completion = await groq.chat.completions.create({
