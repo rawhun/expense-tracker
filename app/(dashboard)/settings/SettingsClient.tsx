@@ -53,7 +53,7 @@ export default function SettingsClient({ name, email, currency }: Props) {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8 flex-1 max-w-3xl w-full mx-auto">
+      <div className="flex flex-col gap-8 flex-1 max-w-4xl w-full mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
 
         {/* Profile */}
