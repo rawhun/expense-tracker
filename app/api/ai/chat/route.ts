@@ -18,7 +18,7 @@ const tools = [
           category: { type: "string", description: "The category of the expense (e.g., Food, Transport, Shopping, Utilities)." },
           notes: { type: "string", description: "Optional notes about the expense." }
         },
-        required: ["amount", "merchant", "category"]
+        required: ["amount"]
       }
     }
   },
@@ -59,7 +59,8 @@ export async function POST(req: Request) {
 You help users understand their spending, build healthier habits, and achieve financial goals.
 Do not judge them. Be supportive, concise, and give actionable advice.
 Today's date is ${today}.
-You have tools available to log expenses and create goals for the user. If the user asks to log an expense or create a goal, use the tools. 
+You have tools available to log expenses and create goals for the user. 
+IMPORTANT: If the user asks to log an expense (even if they only provide an amount, like "log 350"), you MUST call the log_expense tool immediately. Do not ask for clarification first. Guess the category and merchant if missing, or use "Unknown".
 If you use a tool, you MUST briefly confirm to the user that it was done successfully in your final response.`
     };
 
@@ -93,8 +94,8 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
               const { error } = await supabase.from('expenses').insert({
                 user_id: user.id,
                 amount: args.amount,
-                merchant: args.merchant,
-                category: args.category,
+                merchant: args.merchant || 'Unknown',
+                category: args.category || 'General',
                 notes: args.notes || null,
                 date: new Date().toISOString(),
                 confidence: 1.0,
