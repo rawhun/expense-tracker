@@ -1,102 +1,159 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/layout/Navbar";
+import { ArrowRight, Brain, Target, TrendingUp, Sparkles, LogIn } from "lucide-react";
+
+export default function LandingPage() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 } 
+    }
+  };
+
+  const itemVariants: any = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      
+      <main className="flex-1">
+        <section className="relative overflow-hidden pt-24 pb-32 lg:pt-36 lg:pb-40">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"></div>
+          
+          <motion.div 
+            className="container mx-auto px-4 md:px-6 flex flex-col items-center text-center"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            <motion.div variants={itemVariants} className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm text-primary mb-6">
+              <Sparkles className="mr-2 h-4 w-4" />
+              <span>Meet your new AI Financial Coach</span>
+            </motion.div>
+            
+            <motion.h1 
+              variants={itemVariants}
+              className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+            >
+              Understand your spending, <br className="hidden md:inline" />
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                improve your habits.
+              </span>
+            </motion.h1>
+            
+            <motion.p 
+              variants={itemVariants}
+              className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed"
+            >
+              HabitCoach uses advanced AI to engage you in natural conversations about your finances. 
+              Break bad habits and reach your goals without the stress of manual tracking.
+            </motion.p>
+            
+            <motion.div 
+              variants={itemVariants}
+              className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+            >
+              <Link href="/register" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto rounded-full text-base h-12 px-8">
+                  Start Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/login" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full text-base h-12 px-8">
+                  Login 
+                  <LogIn className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </motion.div>
+            
+            <motion.div 
+              variants={itemVariants}
+              className="mt-20 w-full max-w-5xl mx-auto"
+            >
+              <div className="relative rounded-2xl border border-border/50 bg-card/50 glass shadow-2xl p-4 sm:p-8">
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none rounded-2xl" />
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  {/* Mock Chat bubbles */}
+                  <div className="flex flex-col gap-4 w-full md:w-2/3 items-start">
+                    <div className="bg-primary/10 text-foreground px-4 py-3 rounded-2xl rounded-bl-sm max-w-[80%] text-left text-sm md:text-base border border-primary/20">
+                      Spent ₹350 on tea and cigarettes today. Am I budgeting well this week? 
+                    </div>
+                    <div className="bg-muted px-4 py-3 rounded-2xl rounded-br-sm max-w-[80%] self-end text-left text-sm md:text-base border border-border">
+                      <div className="font-semibold text-primary text-xs mb-1">AI Coach</div>
+                      I've logged your expense! You're currently slightly over budget for 'Impulse Buys'. 
+                      Consider skipping takeout on Friday so we can stay on track for your Laptop savings goal! 🎯
+                    </div>
+                  </div>
+                  {/* Mock stats */}
+                  <div className="w-full md:w-1/3 flex flex-col gap-4 border-l border-border/50 pl-0 md:pl-6 pt-6 md:pt-0">
+                    <div className="flex flex-col text-left">
+                      <span className="text-sm font-medium text-muted-foreground">Today's Insight</span>
+                      <span className="font-semibold text-lg text-foreground mt-1">
+                        You spend 34% more on weekends!
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+        <section className="py-20 bg-secondary/50">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Not just an expense tracker</h2>
+              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                Discover why your money goes where it does. Our AI creates meaningful financial memories out of your daily input.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm">
+                <div className="p-3 bg-primary/10 rounded-full mb-4">
+                  <Brain className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">AI-Powered Memory</h3>
+                <p className="text-muted-foreground text-sm">
+                  We don't just log numbers. The coach learns your habits, preferences, and recurring pain points.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm">
+                <div className="p-3 bg-primary/10 rounded-full mb-4">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Goal Centric</h3>
+                <p className="text-muted-foreground text-sm">
+                  Whether quitting smoking or saving for a laptop, every expense is evaluated against your core objectives.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm">
+                <div className="p-3 bg-primary/10 rounded-full mb-4">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Behavioral Insights</h3>
+                <p className="text-muted-foreground text-sm">
+                  Receive personalized, unbiased observations without judgment, backed by your actual spending data.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="border-t py-12 bg-background">
+        <div className="container mx-auto px-4 md:px-6 text-center text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} HabitCoach AI. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );
