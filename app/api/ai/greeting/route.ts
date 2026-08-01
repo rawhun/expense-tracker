@@ -42,7 +42,10 @@ Do not ask how you can help (the chat interface already implies they can ask que
       temperature: 0.7,
     });
 
-    const greeting = completion.choices[0]?.message?.content || `Hey ${name}! Ready to master your finances today?`;
+    let greeting = completion.choices[0]?.message?.content || `Hey ${name}! Ready to master your finances today?`;
+    
+    // Foolproof regex to strip out any hallucinated placeholders the AI might stubbornly include
+    greeting = greeting.replace(/,?\s*\[username\]/gi, '').replace(/,?\s*\[name\]/gi, '');
 
     return NextResponse.json({ greeting });
 
