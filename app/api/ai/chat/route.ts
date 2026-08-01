@@ -45,6 +45,14 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    // Fetch user profile for currency
+    const { data: profile } = await supabase
+      .from('users')
+      .select('currency')
+      .eq('id', user.id)
+      .single();
+    const currency = profile?.currency || "USD";
+
     let { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
@@ -59,6 +67,7 @@ export async function POST(req: Request) {
 You help users understand their spending, build healthier habits, and achieve financial goals.
 Do not judge them. Be supportive, concise, and give actionable advice.
 Today's date is ${today}.
+The user's preferred currency is ${currency}. Always use this currency symbol/code when discussing money.
 You have tools available to log expenses and create goals for the user. 
 IMPORTANT: If the user asks to log an expense (even if they only provide an amount, like "log 350"), you MUST call the log_expense tool immediately. Do not ask for clarification first. Guess the category and merchant if missing, or use "Unknown".
 If you use a tool, you MUST briefly confirm to the user that it was done successfully in your final response.`
@@ -93,7 +102,7 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
             if (functionName === "log_expense") {
               const { error } = await supabase.from('expenses').insert({
                 user_id: user.id,
-                amount: args.amount,
+                amount: Number(args.amount),
                 merchant: args.merchant || 'Unknown',
                 category: args.category || 'General',
                 notes: args.notes || null,
@@ -103,17 +112,17 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
                 is_impulse: false
               });
               if (error) throw error;
-              toolResult = `Successfully logged expense: ${args.merchant} for ${args.amount}`;
+              toolResult = `Successfully logged expense: ${args.merchant} for ${args.amount} ${currency}`;
             } else if (functionName === "create_goal") {
               const { error } = await supabase.from('goals').insert({
                 user_id: user.id,
                 title: args.title,
-                target_amount: args.target_amount,
+                target_amount: Number(args.target_amount),
                 current_amount: 0,
                 status: 'active'
               });
               if (error) throw error;
-              toolResult = `Successfully created goal: ${args.title} for ${args.target_amount}`;
+              toolResult = `Successfully created goal: ${args.title} for ${args.target_amount} ${currency}`;
             } else {
               toolResult = "Unknown tool.";
             }
