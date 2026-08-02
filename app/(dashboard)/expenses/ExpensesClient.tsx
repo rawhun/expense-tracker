@@ -83,24 +83,27 @@ export default function ExpensesClient({
     if (!parsedData) return;
     startSaveTransition(async () => {
       try {
-        const saved = await saveExpense(parsedData);
-        if (!saved?.id) throw new Error("Expense saved but no id returned.");
+        const saved = await saveExpense({
+          ...parsedData,
+          amount: Number(parsedData.amount),
+          date: parsedData.date || new Date().toISOString(),
+        });
         setExpenses(prev => [{
           id: saved.id,
-          amount: Number(saved.amount ?? parsedData.amount),
-          merchant: saved.merchant ?? parsedData.merchant,
-          category: saved.category ?? parsedData.category,
-          subcategory: saved.subcategory ?? parsedData.subcategory,
-          payment_method: saved.payment_method ?? parsedData.payment_method,
-          notes: saved.notes ?? parsedData.notes,
-          date: saved.date ?? parsedData.date,
-          is_impulse: saved.is_impulse ?? parsedData.is_impulse,
-          is_recurring: saved.is_recurring ?? parsedData.is_recurring,
+          amount: Number(saved.amount),
+          merchant: saved.merchant,
+          category: saved.category,
+          subcategory: saved.subcategory ?? undefined,
+          payment_method: saved.payment_method ?? undefined,
+          notes: saved.notes ?? undefined,
+          date: saved.date,
+          is_impulse: saved.is_impulse ?? undefined,
+          is_recurring: saved.is_recurring ?? undefined,
         }, ...prev]);
         setShowConfirmModal(false);
         setInputText("");
         setParsedData(null);
-        toast.success("Expense saved to your account!");
+        toast.success("Expense saved");
       } catch (err: unknown) {
         toast.error(getErrorMessage(err, "Failed to save expense."));
       }

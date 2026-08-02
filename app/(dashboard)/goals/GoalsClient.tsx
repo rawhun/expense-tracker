@@ -49,18 +49,17 @@ export default function GoalsClient({
     startTransition(async () => {
       try {
         const saved = await createGoal({ title: newGoal.title, target: newGoal.target, deadline: newGoal.deadline });
-        if (!saved?.id) throw new Error("Goal created but no id returned.");
         setGoals(prev => [{
           id: saved.id,
-          title: saved.title ?? newGoal.title,
-          target_amount: Number(saved.target_amount ?? newGoal.target),
-          current_amount: Number(saved.current_amount ?? 0),
-          status: saved.status ?? 'active',
-          deadline: saved.deadline ?? newGoal.deadline,
+          title: saved.title,
+          target_amount: Number(saved.target_amount),
+          current_amount: Number(saved.current_amount),
+          status: saved.status,
+          deadline: saved.deadline ?? undefined,
         }, ...prev]);
         setShowAddModal(false);
         setNewGoal({ title: "", target: 0, deadline: "" });
-        toast.success("Goal created successfully!");
+        toast.success("Goal created");
       } catch (err: unknown) {
         toast.error(getErrorMessage(err, "Failed to create goal."));
       }
