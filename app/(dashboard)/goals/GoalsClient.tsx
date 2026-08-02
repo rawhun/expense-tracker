@@ -21,7 +21,7 @@ type Goal = {
   target_amount: number;
   current_amount: number;
   status: string;
-  deadline?: string;
+  deadline?: string | null;
 };
 
 export default function GoalsClient({

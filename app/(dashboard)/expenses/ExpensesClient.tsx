@@ -17,12 +17,12 @@ type Expense = {
   amount: number;
   merchant: string;
   category: string;
-  subcategory?: string;
-  payment_method?: string;
-  notes?: string;
+  subcategory?: string | null;
+  payment_method?: string | null;
+  notes?: string | null;
   date: string;
-  is_impulse?: boolean;
-  is_recurring?: boolean;
+  is_impulse?: boolean | null;
+  is_recurring?: boolean | null;
 };
 
 type ParsedExpense = {
