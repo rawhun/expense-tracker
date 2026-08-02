@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Sparkles, Send, Loader2, Trash2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/utils";
+import { getErrorMessage, formatMoney, currencySymbol, DEFAULT_CURRENCY } from "@/lib/utils";
 import { saveExpense, deleteExpense } from "./actions";
 
 type Expense = {
@@ -38,7 +38,14 @@ type ParsedExpense = {
   is_impulse?: boolean;
 };
 
-export default function ExpensesClient({ initialExpenses }: { initialExpenses: Expense[] }) {
+export default function ExpensesClient({
+  initialExpenses,
+  currency = DEFAULT_CURRENCY,
+}: {
+  initialExpenses: Expense[];
+  currency?: string;
+}) {
+  const symbol = currencySymbol(currency);
   const [inputText, setInputText] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedExpense | null>(null);
@@ -76,12 +83,19 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
     if (!parsedData) return;
     startSaveTransition(async () => {
       try {
-        await saveExpense(parsedData);
-        // Optimistically add to local state
+        const saved = await saveExpense(parsedData);
+        if (!saved?.id) throw new Error("Expense saved but no id returned.");
         setExpenses(prev => [{
-          id: crypto.randomUUID(),
-          ...parsedData,
-          amount: Number(parsedData.amount),
+          id: saved.id,
+          amount: Number(saved.amount ?? parsedData.amount),
+          merchant: saved.merchant ?? parsedData.merchant,
+          category: saved.category ?? parsedData.category,
+          subcategory: saved.subcategory ?? parsedData.subcategory,
+          payment_method: saved.payment_method ?? parsedData.payment_method,
+          notes: saved.notes ?? parsedData.notes,
+          date: saved.date ?? parsedData.date,
+          is_impulse: saved.is_impulse ?? parsedData.is_impulse,
+          is_recurring: saved.is_recurring ?? parsedData.is_recurring,
         }, ...prev]);
         setShowConfirmModal(false);
         setInputText("");
@@ -124,7 +138,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
             <CardTitle className="text-lg flex items-center text-primary">
               <Sparkles className="w-5 h-5 mr-2" /> Log with AI
             </CardTitle>
-            <CardDescription>Type naturally, e.g., &quot;Spent ₹350 on tea and snacks today&quot;</CardDescription>
+            <CardDescription>Type naturally, e.g., &quot;Spent {symbol}350 on tea and snacks today&quot;</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleProcessExpense} className="flex flex-col sm:flex-row gap-3">
@@ -163,7 +177,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
                   <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border bg-card/50 hover:bg-accent/50 transition-colors gap-4">
                     <div className="flex items-center gap-4">
                       <div className="bg-primary/10 p-3 rounded-full flex items-center justify-center h-12 w-12 text-primary font-bold text-lg">
-                        {expense.category?.charAt(0) || '₹'}
+                        {expense.category?.charAt(0) || symbol}
                       </div>
                       <div>
                         <h4 className="font-semibold text-base">{expense.merchant}</h4>
@@ -188,7 +202,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
                       </div>
                     </div>
                     <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center">
-                      <span className="font-bold text-lg">₹{Number(expense.amount).toLocaleString('en-IN')}</span>
+                      <span className="font-bold text-lg">{formatMoney(expense.amount, currency)}</span>
                       <div className="flex items-center gap-1 mt-1">
                         <Button
                           variant="ghost"
@@ -223,7 +237,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Amount (₹)</Label>
+                    <Label>Amount ({symbol})</Label>
                     <Input
                       type="number"
                       value={parsedData.amount}

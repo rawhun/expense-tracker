@@ -25,7 +25,7 @@ export default async function RegisterPage({
       </div>
 
       {message && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800 text-center">
+        <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive text-center">
           {message}
         </div>
       )}

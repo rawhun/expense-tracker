@@ -37,7 +37,7 @@ export async function saveExpense(expenseData: {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
-  const { error } = await supabase.from('expenses').insert([{
+  const { data, error } = await supabase.from('expenses').insert([{
     user_id: user.id,
     amount: expenseData.amount,
     merchant: expenseData.merchant,
@@ -49,11 +49,12 @@ export async function saveExpense(expenseData: {
     confidence: expenseData.confidence ?? null,
     is_recurring: expenseData.is_recurring ?? false,
     is_impulse: expenseData.is_impulse ?? false,
-  }])
+  }]).select('*').maybeSingle()
 
   if (error) throw new Error(error.message)
   revalidatePath('/expenses')
   revalidatePath('/dashboard')
+  return data
 }
 
 export async function deleteExpense(id: string) {

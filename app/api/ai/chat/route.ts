@@ -66,12 +66,12 @@ export async function POST(req: Request) {
         id: user.id,
         email: user.email,
         name: user.email?.split('@')[0] || 'User',
-        currency: 'USD'
+        currency: 'INR'
       });
-      profile = { currency: 'USD' };
+      profile = { currency: 'INR' };
     }
 
-    const currency = profile?.currency || "USD";
+    const currency = profile?.currency || "INR";
 
     const { messages } = await req.json();
 

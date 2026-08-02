@@ -23,9 +23,9 @@ export async function GET() {
         id: user.id,
         email: user.email,
         name: user.email?.split('@')[0] || 'User',
-        currency: 'USD'
+        currency: 'INR'
       });
-      profile = { name: user.email?.split('@')[0] || 'User', currency: 'USD' };
+      profile = { name: user.email?.split('@')[0] || 'User', currency: 'INR' };
     }
 
     // Fetch this month's expenses
@@ -37,7 +37,7 @@ export async function GET() {
       .gte('date', startOfMonth);
 
     const totalSpent = expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
-    const currency = profile?.currency || "USD";
+    const currency = profile?.currency || "INR";
     const nameStr = profile?.name ? `The user's name is ${profile.name}. Greet them by name.` : `You do not know the user's name. Greet them with a friendly "Hi there!". Do NOT use placeholders like [username].`;
 
     const prompt = `You are HabitCoach, a friendly financial AI. 

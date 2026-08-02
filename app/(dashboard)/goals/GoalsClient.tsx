@@ -12,7 +12,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Target, PlusCircle, CheckCircle, Trash2, Loader2, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/utils";
+import { getErrorMessage, formatMoney, currencySymbol, DEFAULT_CURRENCY } from "@/lib/utils";
 import { createGoal, deleteGoal, addFundsToGoal } from "./actions";
 
 type Goal = {
@@ -24,7 +24,14 @@ type Goal = {
   deadline?: string;
 };
 
-export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) {
+export default function GoalsClient({
+  initialGoals,
+  currency = DEFAULT_CURRENCY,
+}: {
+  initialGoals: Goal[];
+  currency?: string;
+}) {
+  const symbol = currencySymbol(currency);
   const [goals, setGoals] = useState<Goal[]>(initialGoals);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFundsModal, setShowFundsModal] = useState<string | null>(null);
@@ -41,14 +48,15 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
     }
     startTransition(async () => {
       try {
-        await createGoal({ title: newGoal.title, target: newGoal.target, deadline: newGoal.deadline });
+        const saved = await createGoal({ title: newGoal.title, target: newGoal.target, deadline: newGoal.deadline });
+        if (!saved?.id) throw new Error("Goal created but no id returned.");
         setGoals(prev => [{
-          id: crypto.randomUUID(),
-          title: newGoal.title,
-          target_amount: newGoal.target,
-          current_amount: 0,
-          status: 'active',
-          deadline: newGoal.deadline,
+          id: saved.id,
+          title: saved.title ?? newGoal.title,
+          target_amount: Number(saved.target_amount ?? newGoal.target),
+          current_amount: Number(saved.current_amount ?? 0),
+          status: saved.status ?? 'active',
+          deadline: saved.deadline ?? newGoal.deadline,
         }, ...prev]);
         setShowAddModal(false);
         setNewGoal({ title: "", target: 0, deadline: "" });
@@ -94,7 +102,7 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
         }));
         setShowFundsModal(null);
         setFundsAmount("");
-        toast.success(`₹${amount.toLocaleString('en-IN')} added to goal!`);
+        toast.success(`${formatMoney(amount, currency)} added to goal!`);
       } catch (err: unknown) {
         toast.error(getErrorMessage(err, "Failed to add funds."));
       }
@@ -131,7 +139,7 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="target">Target Amount (₹)</Label>
+                  <Label htmlFor="target">Target Amount ({symbol})</Label>
                   <Input
                     id="target"
                     type="number"
@@ -202,8 +210,8 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="font-semibold">₹{Number(goal.current_amount).toLocaleString('en-IN')}</span>
-                      <span className="text-muted-foreground">of ₹{Number(goal.target_amount).toLocaleString('en-IN')}</span>
+                      <span className="font-semibold">{formatMoney(goal.current_amount, currency)}</span>
+                      <span className="text-muted-foreground">of {formatMoney(goal.target_amount, currency)}</span>
                     </div>
                     <div className="w-full bg-secondary rounded-full h-2.5">
                       <div
@@ -240,7 +248,7 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
                             <DialogDescription>How much are you adding to &quot;{goal.title}&quot;?</DialogDescription>
                           </DialogHeader>
                           <div className="space-y-3 py-4">
-                            <Label>Amount (₹)</Label>
+                            <Label>Amount ({symbol})</Label>
                             <Input
                               type="number"
                               placeholder="500"

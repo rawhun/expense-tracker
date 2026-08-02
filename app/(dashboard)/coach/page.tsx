@@ -108,7 +108,7 @@ export default function AICoachPage() {
 
   const suggestions = [
     "How much did I spend this week?",
-    "Log ₹200 for coffee today",
+    "Log 200 for coffee today",
     "Help me create a savings goal",
   ];
 

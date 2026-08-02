@@ -26,9 +26,9 @@ export default async function LoginPage({
 
       {message && (
         <div className={`rounded-md p-3 text-sm text-center border ${
-          message.toLowerCase().includes('check your email') || message.toLowerCase().includes('created')
-            ? 'bg-green-50 border-green-200 text-green-800'
-            : 'bg-red-50 border-red-200 text-red-800'
+          message.toLowerCase().includes('check your email') || message.toLowerCase().includes('created') || message.toLowerCase().includes('confirm your email')
+            ? 'bg-green-500/10 border-green-500/30 text-green-400'
+            : 'bg-destructive/10 border-destructive/30 text-destructive'
         }`}>
           {message}
         </div>
@@ -46,12 +46,7 @@ export default async function LoginPage({
           />
         </div>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link href="#" className="text-xs text-primary hover:underline">
-              Forgot password?
-            </Link>
-          </div>
+          <Label htmlFor="password">Password</Label>
           <Input 
             id="password" 
             name="password" 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { SpendingChart } from "@/components/SpendingChart";
 import { SeedDataButton } from "@/components/SeedDataButton";
+import { DEFAULT_CURRENCY, formatMoney } from "@/lib/utils";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -16,10 +17,11 @@ export default async function Dashboard() {
   // Use maybeSingle() instead of single() — single() throws if no row exists, crashing the Server Component
   const { data: profile } = await supabase
     .from('users')
-    .select('name')
+    .select('name, currency')
     .eq('id', user?.id ?? '')
     .maybeSingle();
 
+  const currency = profile?.currency || DEFAULT_CURRENCY;
   const displayName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'there';
 
   const hour = new Date().getHours();
@@ -111,7 +113,7 @@ export default async function Dashboard() {
               <CardTitle className="text-sm font-medium">Today&apos;s Spending</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₹{todayTotal.toLocaleString('en-IN')}</div>
+              <div className="text-2xl font-bold">{formatMoney(todayTotal, currency)}</div>
               <p className="text-xs text-muted-foreground mt-1 flex items-center">
                 {todayTotal > 0 && <ArrowUpRight className="w-3 h-3 mr-1 text-destructive" />}
                 {todayTotal > 0 ? 'Spent today' : 'No expenses yet today'}
@@ -126,7 +128,7 @@ export default async function Dashboard() {
                 <CardTitle className="text-sm font-medium">Goal: {topGoal.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹{Number(topGoal.current_amount).toLocaleString('en-IN')}</div>
+                <div className="text-2xl font-bold">{formatMoney(Number(topGoal.current_amount), currency)}</div>
                 <div className="w-full bg-secondary rounded-full h-2 mt-3">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
@@ -134,7 +136,7 @@ export default async function Dashboard() {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {topGoal.target_amount > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}% of ₹{Number(topGoal.target_amount || 0).toLocaleString('en-IN')}
+                  {topGoal.target_amount > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}% of {formatMoney(Number(topGoal.target_amount || 0), currency)}
                 </p>
               </CardContent>
             </Card>
@@ -175,7 +177,7 @@ export default async function Dashboard() {
               <CardDescription>Your recent expense distribution.</CardDescription>
             </CardHeader>
             <CardContent className="pl-2 pt-4 border-t border-border/50">
-              <SpendingChart data={chartData} />
+              <SpendingChart data={chartData} currency={currency} />
             </CardContent>
           </Card>
 
@@ -198,7 +200,7 @@ export default async function Dashboard() {
                         <p className="text-sm font-medium leading-none">{expense.merchant}</p>
                         <p className="text-xs text-muted-foreground">{expense.category}</p>
                       </div>
-                      <div className="font-semibold text-sm">₹{Number(expense.amount).toLocaleString('en-IN')}</div>
+                      <div className="font-semibold text-sm">{formatMoney(Number(expense.amount), currency)}</div>
                     </div>
                   ))}
                 </div>

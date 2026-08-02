@@ -1,3 +1,4 @@
+import { DEFAULT_CURRENCY } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import SettingsClient from "./SettingsClient";
 
@@ -16,7 +17,7 @@ export default async function SettingsPage() {
     <SettingsClient
       name={profile?.name || user?.user_metadata?.name || ""}
       email={profile?.email || user?.email || ""}
-      currency={profile?.currency || "INR"}
+      currency={profile?.currency || DEFAULT_CURRENCY}
     />
   );
 }

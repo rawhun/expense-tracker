@@ -30,18 +30,19 @@ export async function createGoal(goalData: {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
-  const { error } = await supabase.from('goals').insert([{
+  const { data, error } = await supabase.from('goals').insert([{
     user_id: user.id,
     title: goalData.title,
     target_amount: goalData.target,
     current_amount: 0,
     deadline: goalData.deadline || null,
     status: 'active',
-  }])
+  }]).select('*').maybeSingle()
 
   if (error) throw new Error(error.message)
   revalidatePath('/goals')
   revalidatePath('/dashboard')
+  return data
 }
 
 export async function deleteGoal(id: string) {

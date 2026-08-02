@@ -11,13 +11,18 @@ export function SeedDataButton() {
   const router = useRouter();
 
   const handleSeed = async () => {
+    const confirmed = window.confirm(
+      "This will DELETE all your current expenses and goals, then load demo data. Continue?"
+    );
+    if (!confirmed) return;
+
     setIsSeeding(true);
     try {
       const res = await fetch("/api/seed", { method: "POST" });
       const data = await res.json();
       
       if (data.success) {
-        toast.success("Realistic data loaded! Refreshing...");
+        toast.success("Demo data loaded! Refreshing...");
         router.refresh();
       } else {
         toast.error(data.error || "Failed to seed data");
@@ -35,6 +40,7 @@ export function SeedDataButton() {
       className="rounded-full shadow-sm text-xs h-8"
       onClick={handleSeed}
       disabled={isSeeding}
+      title="Replaces all expenses and goals with sample data"
     >
       {isSeeding ? (
         <Loader2 className="w-3 h-3 mr-2 animate-spin" />
