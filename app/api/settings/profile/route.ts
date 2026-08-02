@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     await supabase.auth.updateUser({ data: { name: name.trim() } });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Profile update error:", error);
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }

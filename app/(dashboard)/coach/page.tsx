@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, User, Sparkles, Loader2, Trash2 } from "lucide-react";
+import { Send, Bot, Sparkles, Loader2, Trash2 } from "lucide-react";
 
 type Message = {
   id: string;
@@ -29,7 +29,7 @@ export default function AICoachPage() {
           setIsInitializing(false);
           return;
         }
-      } catch (e) {
+      } catch {
         // parsing error, fallback to new chat
       }
     }
@@ -106,6 +106,16 @@ export default function AICoachPage() {
       .finally(() => setIsInitializing(false));
   };
 
+  const suggestions = [
+    "How much did I spend this week?",
+    "Log ₹200 for coffee today",
+    "Help me create a savings goal",
+  ];
+
+  const handleSuggestion = (text: string) => {
+    setInputMsg(text);
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col h-[calc(100vh-120px)] w-full max-w-4xl mx-auto rounded-3xl border border-border/50 overflow-hidden shadow-sm glass relative">
@@ -169,6 +179,20 @@ export default function AICoachPage() {
 
         {/* Input Area */}
         <div className="p-4 bg-background border-t">
+          {!isInitializing && messages.length <= 1 && !isTyping && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => handleSuggestion(suggestion)}
+                  className="text-xs px-3 py-1.5 rounded-full border border-border bg-card hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
           <form onSubmit={handleSendMessage} className="flex gap-2 relative">
             <Input 
               placeholder="Ask anything about your finances..." 

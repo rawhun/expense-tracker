@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { createClient } from "@/lib/supabase/server";
+import { getErrorMessage } from "@/lib/utils";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -53,15 +54,16 @@ Do not ask how you can help (the chat interface already implies they can ask que
       temperature: 0.7,
     });
 
-    let greeting = completion.choices[0]?.message?.content || `Hey ${name}! Ready to master your finances today?`;
+    const displayName = profile?.name || "there";
+    let greeting = completion.choices[0]?.message?.content || `Hey ${displayName}! Ready to master your finances today?`;
     
     // Foolproof regex to strip out any hallucinated placeholders the AI might stubbornly include
     greeting = greeting.replace(/,?\s*\[username\]/gi, '').replace(/,?\s*\[name\]/gi, '');
 
     return NextResponse.json({ greeting });
 
-  } catch (error: any) {
-    console.error("Groq Greeting Error:", error?.message);
+  } catch (error: unknown) {
+    console.error("Groq Greeting Error:", getErrorMessage(error));
     return NextResponse.json({ 
       greeting: "Hello again! I noticed you saved slightly more than last week. Have any questions about your budget or want to set a new goal today?" 
     });

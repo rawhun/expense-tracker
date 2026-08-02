@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     if (error) throw new Error(error.message);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Preferences update error:", error);
     return NextResponse.json({ error: "Failed to update preferences" }, { status: 500 });
   }

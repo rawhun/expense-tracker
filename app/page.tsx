@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/Navbar";
 import { ArrowRight, Brain, Target, TrendingUp, Sparkles, LogIn } from "lucide-react";
 
 export default function LandingPage() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1, 
@@ -15,7 +15,7 @@ export default function LandingPage() {
     }
   };
 
-  const itemVariants: any = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
   };
@@ -82,21 +82,19 @@ export default function LandingPage() {
               <div className="relative rounded-2xl border border-border/50 bg-card/50 glass shadow-2xl p-4 sm:p-8">
                 <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none rounded-2xl" />
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  {/* Mock Chat bubbles */}
                   <div className="flex flex-col gap-4 w-full md:w-2/3 items-start">
                     <div className="bg-primary/10 text-foreground px-4 py-3 rounded-2xl rounded-bl-sm max-w-[80%] text-left text-sm md:text-base border border-primary/20">
                       Spent ₹350 on tea and cigarettes today. Am I budgeting well this week? 
                     </div>
                     <div className="bg-muted px-4 py-3 rounded-2xl rounded-br-sm max-w-[80%] self-end text-left text-sm md:text-base border border-border">
                       <div className="font-semibold text-primary text-xs mb-1">AI Coach</div>
-                      I've logged your expense! You're currently slightly over budget for 'Impulse Buys'. 
+                      I&apos;ve logged your expense! You&apos;re currently slightly over budget for &apos;Impulse Buys&apos;. 
                       Consider skipping takeout on Friday so we can stay on track for your Laptop savings goal! 🎯
                     </div>
                   </div>
-                  {/* Mock stats */}
                   <div className="w-full md:w-1/3 flex flex-col gap-4 border-l border-border/50 pl-0 md:pl-6 pt-6 md:pt-0">
                     <div className="flex flex-col text-left">
-                      <span className="text-sm font-medium text-muted-foreground">Today's Insight</span>
+                      <span className="text-sm font-medium text-muted-foreground">Today&apos;s Insight</span>
                       <span className="font-semibold text-lg text-foreground mt-1">
                         You spend 34% more on weekends!
                       </span>
@@ -124,7 +122,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">AI-Powered Memory</h3>
                 <p className="text-muted-foreground text-sm">
-                  We don't just log numbers. The coach learns your habits, preferences, and recurring pain points.
+                  We don&apos;t just log numbers. The coach learns your habits, preferences, and recurring pain points.
                 </p>
               </div>
               <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm">

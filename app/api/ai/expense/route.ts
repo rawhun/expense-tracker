@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { createClient } from "@/lib/supabase/server";
+import { getErrorMessage } from "@/lib/utils";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { input_text } = await req.json();
 
@@ -54,8 +56,8 @@ Return this exact JSON structure:
 
     return NextResponse.json({ success: true, data: parsedExpense });
 
-  } catch (error: any) {
-    console.error("Groq Expense Error:", error?.message);
+  } catch (error: unknown) {
+    console.error("Groq Expense Error:", getErrorMessage(error));
     return NextResponse.json({ error: "Failed to parse expense. Please try rephrasing." }, { status: 500 });
   }
 }

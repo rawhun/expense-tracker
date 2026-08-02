@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import type { ChatCompletionMessageParam, ChatCompletionTool } from "groq-sdk/resources/chat/completions";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getErrorMessage } from "@/lib/utils";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const tools = [
+const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
@@ -40,6 +42,10 @@ const tools = [
   }
 ];
 
+function parseAmount(val: unknown) {
+  return parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
+}
+
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
@@ -67,7 +73,7 @@ export async function POST(req: Request) {
 
     const currency = profile?.currency || "USD";
 
-    let { messages } = await req.json();
+    const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: "Messages array is required" }, { status: 400 });
@@ -75,7 +81,7 @@ export async function POST(req: Request) {
 
     const today = new Date().toISOString();
 
-    const systemPrompt = {
+    const systemPrompt: ChatCompletionMessageParam = {
       role: "system",
       content: `You are HabitCoach, a friendly, professional AI financial habit coach.
 You help users understand their spending, build healthier habits, and achieve financial goals.
@@ -87,15 +93,15 @@ IMPORTANT: If the user asks to log an expense (even if they only provide an amou
 If you use a tool, you MUST briefly confirm to the user that it was done successfully in your final response.`
     };
 
-    let chatHistory = [systemPrompt, ...messages];
+    const chatHistory: ChatCompletionMessageParam[] = [systemPrompt, ...messages];
     let finalResponse = "";
 
     // Allow up to 3 recursive calls for tool processing
     for (let i = 0; i < 3; i++) {
       const completion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
-        messages: chatHistory as any,
-        tools: tools as any,
+        messages: chatHistory,
+        tools,
         tool_choice: "auto",
         max_tokens: 512,
         temperature: 0.7,
@@ -113,8 +119,6 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
           let toolResult = "";
 
           try {
-            const parseAmount = (val: any) => parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
-
             if (functionName === "log_expense") {
               const { error } = await supabase.from('expenses').insert([{
                 user_id: user.id,
@@ -146,9 +150,9 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
             } else {
               toolResult = "Unknown tool.";
             }
-          } catch (e: any) {
-            console.error(`Tool execution error for ${functionName}:`, e.message);
-            toolResult = `Failed to execute ${functionName}: ${e.message}`;
+          } catch (e: unknown) {
+            console.error(`Tool execution error for ${functionName}:`, getErrorMessage(e));
+            toolResult = `Failed to execute ${functionName}: ${getErrorMessage(e)}`;
           }
 
           chatHistory.push({
@@ -168,10 +172,11 @@ If you use a tool, you MUST briefly confirm to the user that it was done success
     if (!finalResponse) finalResponse = "I've processed your request!";
     return NextResponse.json({ success: true, reply: finalResponse });
 
-  } catch (error: any) {
-    console.error("Groq Chat Error:", error?.status, error?.message);
+  } catch (error: unknown) {
+    const err = error as { status?: number; message?: string };
+    console.error("Groq Chat Error:", err?.status, err?.message);
 
-    if (error?.status === 429) {
+    if (err?.status === 429) {
       return NextResponse.json({
         error: "⏳ I'm a bit busy right now. Please wait a moment and try again!"
       }, { status: 200 });

@@ -22,7 +22,7 @@ export function SeedDataButton() {
       } else {
         toast.error(data.error || "Failed to seed data");
       }
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong");
     } finally {
       setIsSeeding(false);

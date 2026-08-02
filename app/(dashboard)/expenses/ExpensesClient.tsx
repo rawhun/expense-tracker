@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Send, Loader2, Trash2, Edit2, AlertCircle } from "lucide-react";
+import { Sparkles, Send, Loader2, Trash2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 import { saveExpense, deleteExpense } from "./actions";
 
 type Expense = {
@@ -64,8 +65,8 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
       } else {
         throw new Error(data.error);
       }
-    } catch (err: any) {
-      toast.error(err.message || "Something went wrong parsing this expense.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Something went wrong parsing this expense."));
     } finally {
       setIsProcessing(false);
     }
@@ -86,8 +87,8 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
         setInputText("");
         setParsedData(null);
         toast.success("Expense saved to your account!");
-      } catch (err: any) {
-        toast.error(err.message || "Failed to save expense.");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Failed to save expense."));
       }
     });
   };
@@ -99,8 +100,8 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
         await deleteExpense(id);
         setExpenses(prev => prev.filter(e => e.id !== id));
         toast.success("Expense deleted.");
-      } catch (err: any) {
-        toast.error(err.message || "Failed to delete expense.");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Failed to delete expense."));
       } finally {
         setDeletingId(null);
       }

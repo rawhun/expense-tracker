@@ -7,7 +7,13 @@ import {
 
 type DataPoint = { label: string; amount: number };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+type ChartTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ value?: number | string }>;
+  label?: string | number;
+};
+
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-card border border-border rounded-xl px-4 py-2 shadow-lg text-sm">

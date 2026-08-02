@@ -12,6 +12,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Target, PlusCircle, CheckCircle, Trash2, Loader2, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/utils";
 import { createGoal, deleteGoal, addFundsToGoal } from "./actions";
 
 type Goal = {
@@ -52,8 +53,8 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
         setShowAddModal(false);
         setNewGoal({ title: "", target: 0, deadline: "" });
         toast.success("Goal created successfully!");
-      } catch (err: any) {
-        toast.error(err.message || "Failed to create goal.");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Failed to create goal."));
       }
     });
   };
@@ -65,8 +66,8 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
         await deleteGoal(id);
         setGoals(prev => prev.filter(g => g.id !== id));
         toast.success("Goal deleted.");
-      } catch (err: any) {
-        toast.error(err.message || "Failed to delete goal.");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Failed to delete goal."));
       } finally {
         setDeletingId(null);
       }
@@ -94,8 +95,8 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
         setShowFundsModal(null);
         setFundsAmount("");
         toast.success(`₹${amount.toLocaleString('en-IN')} added to goal!`);
-      } catch (err: any) {
-        toast.error(err.message || "Failed to add funds.");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Failed to add funds."));
       }
     });
   };

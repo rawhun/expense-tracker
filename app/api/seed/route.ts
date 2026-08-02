@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getErrorMessage } from "@/lib/utils";
 
 export async function POST() {
   try {
@@ -94,8 +95,8 @@ export async function POST() {
     if (goalErr) throw goalErr;
 
     return NextResponse.json({ success: true, message: "Sample data seeded successfully!" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Seed error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
