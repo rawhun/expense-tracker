@@ -156,7 +156,6 @@ export default function ExpensesClient({
           </CardContent>
         </Card>
 
-        {/* Expense History */}
         <Card className="glass">
           <CardHeader>
             <CardTitle>History</CardTitle>
@@ -224,7 +223,6 @@ export default function ExpensesClient({
           </CardContent>
         </Card>
 
-        {/* Confirm Modal */}
         <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

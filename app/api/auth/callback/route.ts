@@ -30,6 +30,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redirect to error page if code exchange fails
   return NextResponse.redirect(`${origin}/login?message=Could not verify email. Please try again.`)
 }

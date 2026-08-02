@@ -55,8 +55,6 @@ export default function SettingsClient({ name, email, currency }: Props) {
     <DashboardLayout>
       <div className="flex flex-col gap-8 flex-1 max-w-4xl w-full mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-
-        {/* Profile */}
         <Card className="glass">
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
@@ -81,8 +79,6 @@ export default function SettingsClient({ name, email, currency }: Props) {
             <Button onClick={handleSaveProfile}>Save Changes</Button>
           </CardFooter>
         </Card>
-
-        {/* Preferences */}
         <Card className="glass">
           <CardHeader>
             <CardTitle>Preferences</CardTitle>
@@ -121,8 +117,6 @@ export default function SettingsClient({ name, email, currency }: Props) {
             <Button onClick={handleSavePreferences}>Update Preferences</Button>
           </CardFooter>
         </Card>
-
-        {/* Danger Zone */}
         <Card className="border-destructive/20 bg-destructive/5 glass">
           <CardHeader>
             <CardTitle className="text-destructive">Danger Zone</CardTitle>

@@ -52,14 +52,12 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Fetch user profile for currency — use maybeSingle() to avoid throwing when no row
     let { data: profile } = await supabase
       .from('users')
       .select('currency')
       .eq('id', user.id)
       .maybeSingle();
 
-    // Create profile row if missing (needed for FK on expenses/goals)
     if (!profile) {
       await supabase.from('users').insert({
         id: user.id,
@@ -94,7 +92,6 @@ After using a tool, briefly confirm what you did.`
     const chatHistory: ChatCompletionMessageParam[] = [systemPrompt, ...messages];
     let finalResponse = "";
 
-    // Allow up to 3 recursive calls for tool processing
     for (let i = 0; i < 3; i++) {
       const completion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
@@ -159,9 +156,7 @@ After using a tool, briefly confirm what you did.`
             content: toolResult
           });
         }
-        // Loop continues to generate the next response after tool results
       } else {
-        // No more tool calls, we have our final text response
         finalResponse = message.content || "I've handled that for you!";
         break;
       }

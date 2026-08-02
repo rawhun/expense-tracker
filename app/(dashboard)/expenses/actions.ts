@@ -122,7 +122,6 @@ export async function saveExpense(expenseData: {
     is_impulse: Boolean(expenseData.is_impulse),
   }
 
-  // Prefer returning the inserted row; fall back if RETURNING is blocked by RLS.
   const { data, error } = await supabase
     .from("expenses")
     .insert([payload])
@@ -130,7 +129,6 @@ export async function saveExpense(expenseData: {
     .maybeSingle()
 
   if (error) {
-    // Retry without select in case RETURNING/select policy is the problem
     const { data: inserted, error: insertError } = await supabase
       .from("expenses")
       .insert([payload])

@@ -53,7 +53,6 @@ Return this exact JSON structure:
 
     if (!parsedExpense.amount) parsedExpense.amount = 0;
     if (!parsedExpense.merchant) parsedExpense.merchant = "Unknown Merchant";
-    // Normalize amount/date so the client never posts invalid values
     parsedExpense.amount = parseFloat(String(parsedExpense.amount).replace(/[^0-9.-]+/g, "")) || 0;
     if (!parsedExpense.date || Number.isNaN(new Date(parsedExpense.date).getTime())) {
       parsedExpense.date = new Date().toISOString();

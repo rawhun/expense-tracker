@@ -11,7 +11,6 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Fetch user profile for name and currency — use maybeSingle() so it doesn't throw on missing rows
     let { data: profile } = await supabase
       .from('users')
       .select('name, currency')
@@ -28,7 +27,6 @@ export async function GET() {
       profile = { name: user.email?.split('@')[0] || 'User', currency: 'INR' };
     }
 
-    // Fetch this month's expenses
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
     const { data: expenses } = await supabase
       .from('expenses')

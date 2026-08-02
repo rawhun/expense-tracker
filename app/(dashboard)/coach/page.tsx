@@ -30,11 +30,9 @@ export default function AICoachPage() {
           return;
         }
       } catch {
-        // parsing error, fallback to new chat
       }
     }
     
-    // Fetch dynamic greeting if no history
     fetch("/api/ai/greeting")
       .then(res => res.json())
       .then(data => {
@@ -127,7 +125,6 @@ export default function AICoachPage() {
           </div>
         )}
 
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-card/60 backdrop-blur-sm">
           <div className="flex items-center">
             <div className="bg-primary/10 p-2 rounded-full mr-3">
@@ -143,7 +140,6 @@ export default function AICoachPage() {
           </Button>
         </div>
 
-        {/* Chat Area */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {messages.map(msg => (
             <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -177,7 +173,6 @@ export default function AICoachPage() {
           <div ref={endOfMessagesRef} />
         </div>
 
-        {/* Input Area */}
         <div className="p-4 bg-background border-t">
           {!isInitializing && messages.length <= 1 && !isTyping && (
             <div className="flex flex-wrap gap-2 mb-3">

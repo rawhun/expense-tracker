@@ -63,7 +63,6 @@ export async function updateSession(request: NextRequest) {
     }
   } catch (error) {
     console.error('Middleware session update failed:', error)
-    // Fail open for public routes; send protected routes to login
     const isPublic =
       pathname === '/' ||
       pathname.startsWith('/login') ||

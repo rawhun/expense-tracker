@@ -48,7 +48,6 @@ export async function signup(formData: FormData) {
     password,
     options: {
       data: { name },
-      // Tell Supabase where to redirect after email confirmation
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/auth/callback`,
     }
   })
@@ -56,9 +55,6 @@ export async function signup(formData: FormData) {
   if (error) {
     return redirect('/register?message=' + encodeURIComponent(error.message))
   }
-
-  // The trigger on auth.users automatically creates the public.users profile.
-  // No manual insert needed here.
 
   revalidatePath('/', 'layout')
   redirect('/login?message=' + encodeURIComponent('Account created! Check your email to confirm your account before logging in.'))

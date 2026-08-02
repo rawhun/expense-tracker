@@ -17,7 +17,6 @@ export async function POST(req: Request) {
 
     if (error) throw new Error(error.message);
 
-    // Also update auth metadata
     await supabase.auth.updateUser({ data: { name: name.trim() } });
 
     return NextResponse.json({ success: true });
