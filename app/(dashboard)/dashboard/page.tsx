@@ -9,74 +9,91 @@ import { SeedDataButton } from "@/components/SeedDataButton";
 import { DEFAULT_CURRENCY, formatMoney } from "@/lib/utils";
 
 export default async function Dashboard() {
-  const supabase = await createClient();
+  let user = null as { id: string; email?: string; user_metadata?: { name?: string } } | null
+  let profile: { name?: string | null; currency?: string | null } | null = null
+  let expenses: Array<{
+    id: string
+    merchant?: string | null
+    category?: string | null
+    amount?: number | string | null
+  }> = []
+  let topGoal: {
+    title?: string | null
+    current_amount?: number | string | null
+    target_amount?: number | string | null
+  } | null = null
+  let todayTotal = 0
+  let chartData: Array<{ label: string; amount: number }> = []
 
-  const { data: authData } = await supabase.auth.getUser();
-  const user = authData?.user ?? null;
+  try {
+    const supabase = await createClient()
+    const { data: authData } = await supabase.auth.getUser()
+    user = authData?.user ?? null
 
-  // Use maybeSingle() instead of single() — single() throws if no row exists, crashing the Server Component
-  const { data: profile } = await supabase
-    .from('users')
-    .select('name, currency')
-    .eq('id', user?.id ?? '')
-    .maybeSingle();
+    const { data: profileRow } = await supabase
+      .from('users')
+      .select('name, currency')
+      .eq('id', user?.id ?? '')
+      .maybeSingle()
+    profile = profileRow
 
-  const currency = profile?.currency || DEFAULT_CURRENCY;
-  const displayName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'there';
+    const { data: expenseRows } = await supabase
+      .from('expenses')
+      .select('id, merchant, category, amount, date')
+      .eq('user_id', user?.id)
+      .order('date', { ascending: false })
+      .limit(4)
+    expenses = expenseRows || []
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
+    const { data: goals } = await supabase
+      .from('goals')
+      .select('title, current_amount, target_amount')
+      .eq('user_id', user?.id)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(1)
+    topGoal = goals?.[0] ?? null
 
-  const { data: expenses } = await supabase
-    .from('expenses')
-    .select('*')
-    .eq('user_id', user?.id)
-    .order('date', { ascending: false })
-    .limit(4);
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const { data: todayExpenses } = await supabase
+      .from('expenses')
+      .select('amount')
+      .eq('user_id', user?.id)
+      .gte('date', today.toISOString())
+    todayTotal = todayExpenses?.reduce((sum, e) => sum + Number(e.amount), 0) ?? 0
 
-  const { data: goals } = await supabase
-    .from('goals')
-    .select('*')
-    .eq('user_id', user?.id)
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
-    .limit(1);
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date()
+      d.setDate(d.getDate() - (6 - i))
+      return d
+    })
 
-  const topGoal = goals?.[0] ?? null;
+    const { data: weekExpenses } = await supabase
+      .from('expenses')
+      .select('amount, date')
+      .eq('user_id', user?.id)
+      .gte('date', last7Days[0].toISOString())
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const { data: todayExpenses } = await supabase
-    .from('expenses')
-    .select('amount')
-    .eq('user_id', user?.id)
-    .gte('date', today.toISOString());
+    chartData = last7Days.map(day => {
+      const dayStr = day.toLocaleDateString('en-IN', { weekday: 'short' })
+      const total = (weekExpenses || [])
+        .filter(e => {
+          const d = new Date(e.date)
+          return !isNaN(d.getTime()) && d.toDateString() === day.toDateString()
+        })
+        .reduce((sum, e) => sum + Number(e.amount), 0)
+      return { label: dayStr, amount: total }
+    })
+  } catch (error) {
+    console.error('Dashboard data load failed:', error)
+  }
 
-  const todayTotal = todayExpenses?.reduce((sum, e) => sum + Number(e.amount), 0) ?? 0;
+  const currency = profile?.currency || DEFAULT_CURRENCY
+  const displayName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'there'
 
-  // Build last-7-days chart data
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    return d;
-  });
-
-  const { data: weekExpenses } = await supabase
-    .from('expenses')
-    .select('amount, date')
-    .eq('user_id', user?.id)
-    .gte('date', last7Days[0].toISOString());
-
-  const chartData = last7Days.map(day => {
-    const dayStr = day.toLocaleDateString('en-IN', { weekday: 'short' });
-    const total = (weekExpenses || [])
-      .filter(e => {
-        const d = new Date(e.date);
-        return !isNaN(d.getTime()) && d.toDateString() === day.toDateString();
-      })
-      .reduce((sum, e) => sum + Number(e.amount), 0);
-    return { label: dayStr, amount: total };
-  });
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening'
 
   const categoryEmojis: Record<string, string> = {
     'Food & Drinks': '🍔', 'Food': '🍔', 'Transport': '🚗',
@@ -132,11 +149,11 @@ export default async function Dashboard() {
                 <div className="w-full bg-secondary rounded-full h-2 mt-3">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${topGoal.target_amount > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}%` }}
+                    style={{ width: `${Number(topGoal.target_amount) > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}%` }}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {topGoal.target_amount > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}% of {formatMoney(Number(topGoal.target_amount || 0), currency)}
+                  {Number(topGoal.target_amount) > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}% of {formatMoney(Number(topGoal.target_amount || 0), currency)}
                 </p>
               </CardContent>
             </Card>
@@ -193,7 +210,7 @@ export default async function Dashboard() {
                     <div key={expense.id} className="flex items-center">
                       <div className="bg-primary/10 p-2 rounded-full mr-4">
                         <span className="text-primary text-xl">
-                          {categoryEmojis[expense.category] || '💸'}
+                          {categoryEmojis[expense.category || ''] || '💸'}
                         </span>
                       </div>
                       <div className="space-y-1 flex-1">
