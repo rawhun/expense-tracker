@@ -109,7 +109,7 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8 max-w-5xl mx-auto">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
@@ -179,7 +179,10 @@ export default function ExpensesClient({ initialExpenses }: { initialExpenses: E
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          {new Date(expense.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {(() => {
+                            const d = new Date(expense.date);
+                            return isNaN(d.getTime()) ? 'Invalid Date' : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                          })()}
                         </p>
                       </div>
                     </div>

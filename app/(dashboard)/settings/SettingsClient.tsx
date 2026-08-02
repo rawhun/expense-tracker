@@ -91,7 +91,7 @@ export default function SettingsClient({ name, email, currency }: Props) {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="currency">Default Currency</Label>
-              <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
+              <Select value={selectedCurrency} onValueChange={(val) => setSelectedCurrency(val ?? selectedCurrency)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a currency" />
                 </SelectTrigger>

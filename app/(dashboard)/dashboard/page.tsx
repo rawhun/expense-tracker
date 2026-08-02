@@ -10,13 +10,15 @@ import { SeedDataButton } from "@/components/SeedDataButton";
 export default async function Dashboard() {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: authData } = await supabase.auth.getUser();
+  const user = authData?.user ?? null;
 
+  // Use maybeSingle() instead of single() — single() throws if no row exists, crashing the Server Component
   const { data: profile } = await supabase
     .from('users')
     .select('name')
-    .eq('id', user?.id)
-    .single();
+    .eq('id', user?.id ?? '')
+    .maybeSingle();
 
   const displayName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'there';
 
@@ -66,7 +68,10 @@ export default async function Dashboard() {
   const chartData = last7Days.map(day => {
     const dayStr = day.toLocaleDateString('en-IN', { weekday: 'short' });
     const total = (weekExpenses || [])
-      .filter(e => new Date(e.date).toDateString() === day.toDateString())
+      .filter(e => {
+        const d = new Date(e.date);
+        return !isNaN(d.getTime()) && d.toDateString() === day.toDateString();
+      })
       .reduce((sum, e) => sum + Number(e.amount), 0);
     return { label: dayStr, amount: total };
   });
@@ -79,7 +84,7 @@ export default async function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8 max-w-5xl w-full mx-auto">
+      <div className="flex flex-col gap-8">
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -125,11 +130,11 @@ export default async function Dashboard() {
                 <div className="w-full bg-secondary rounded-full h-2 mt-3">
                   <div
                     className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, Math.round((topGoal.current_amount / topGoal.target_amount) * 100))}%` }}
+                    style={{ width: `${topGoal.target_amount > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}%` }}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {Math.min(100, Math.round((topGoal.current_amount / topGoal.target_amount) * 100))}% of ₹{Number(topGoal.target_amount).toLocaleString('en-IN')}
+                  {topGoal.target_amount > 0 ? Math.min(100, Math.round((Number(topGoal.current_amount) / Number(topGoal.target_amount)) * 100)) : 0}% of ₹{Number(topGoal.target_amount || 0).toLocaleString('en-IN')}
                 </p>
               </CardContent>
             </Card>

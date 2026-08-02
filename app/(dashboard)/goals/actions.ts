@@ -70,7 +70,7 @@ export async function addFundsToGoal(id: string, amount: number) {
     .select('current_amount, target_amount')
     .eq('id', id)
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!goal) throw new Error('Goal not found')
 

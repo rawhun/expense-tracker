@@ -46,12 +46,12 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Fetch user profile for currency
+    // Fetch user profile for currency — use maybeSingle() to avoid throwing when no row
     let { data: profile } = await supabase
       .from('users')
       .select('currency')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     // FAILSAFE: If the user registered before the auto-create trigger was applied, their public.users row is missing.
     // We MUST create it here, otherwise all expense inserts will fail due to a foreign key constraint.

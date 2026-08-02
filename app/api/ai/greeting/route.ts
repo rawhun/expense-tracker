@@ -10,12 +10,12 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Fetch user profile for name and currency
+    // Fetch user profile for name and currency — use maybeSingle() so it doesn't throw on missing rows
     let { data: profile } = await supabase
       .from('users')
       .select('name, currency')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile) {
       await supabase.from('users').insert({

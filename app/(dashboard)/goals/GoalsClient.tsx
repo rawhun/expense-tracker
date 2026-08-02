@@ -102,7 +102,7 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8 max-w-5xl mx-auto">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Financial Goals</h1>
@@ -212,7 +212,14 @@ export default function GoalsClient({ initialGoals }: { initialGoals: Goal[] }) 
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground mt-3">
                       <span>{percentage}% completed</span>
-                      {goal.deadline && <span>Target: {new Date(goal.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
+                      {goal.deadline && (
+                        <span>
+                          Target: {(() => {
+                            const d = new Date(goal.deadline);
+                            return isNaN(d.getTime()) ? 'Invalid Date' : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                          })()}
+                        </span>
+                      )}
                     </div>
                   </CardContent>
                   {!isCompleted && (
