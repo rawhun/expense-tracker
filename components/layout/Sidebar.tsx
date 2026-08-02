@@ -10,7 +10,7 @@ const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Expenses", href: "/expenses", icon: List },
   { name: "Goals", href: "/goals", icon: Target },
-  { name: "AI Coach", href: "/coach", icon: MessageSquare },
+  { name: "Coach", href: "/coach", icon: MessageSquare },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -21,7 +21,7 @@ export function Sidebar() {
     <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-card px-4 py-6 shadow-sm hidden md:flex">
       <div className="flex items-center gap-2 px-2 pb-8">
         <Activity className="h-6 w-6 text-primary" />
-        <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-xl font-bold text-transparent">
+        <span className="text-xl font-semibold">
           HabitCoach
         </span>
       </div>

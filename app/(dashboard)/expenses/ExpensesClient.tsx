@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Send, Loader2, Trash2, AlertCircle } from "lucide-react";
+import { Send, Loader2, Trash2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { getErrorMessage, formatMoney, currencySymbol, DEFAULT_CURRENCY } from "@/lib/utils";
 import { saveExpense, deleteExpense } from "./actions";
@@ -68,7 +68,7 @@ export default function ExpensesClient({
       if (data.success) {
         setParsedData({ ...data.data, amount: parseFloat(data.data.amount) });
         setShowConfirmModal(true);
-        toast.success("AI processed your expense!");
+        toast.success("Expense details ready to review");
       } else {
         throw new Error(data.error);
       }
@@ -132,13 +132,10 @@ export default function ExpensesClient({
           </div>
         </div>
 
-        {/* AI Input */}
-        <Card className="glass border-primary/20 bg-primary/5">
+        <Card className="glass">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center text-primary">
-              <Sparkles className="w-5 h-5 mr-2" /> Log with AI
-            </CardTitle>
-            <CardDescription>Type naturally, e.g., &quot;Spent {symbol}350 on tea and snacks today&quot;</CardDescription>
+            <CardTitle className="text-lg">Add expense</CardTitle>
+            <CardDescription>Type it naturally, e.g. &quot;Spent {symbol}350 on tea and snacks today&quot;</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleProcessExpense} className="flex flex-col sm:flex-row gap-3">
@@ -150,7 +147,7 @@ export default function ExpensesClient({
                 disabled={isProcessing}
               />
               <Button type="submit" size="lg" className="h-12 w-full sm:w-auto" disabled={isProcessing || !inputText.trim()}>
-                {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-4 h-4 mr-2" />Parse</>}
+                {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-4 h-4 mr-2" />Add</>}
               </Button>
             </form>
           </CardContent>
@@ -228,9 +225,9 @@ export default function ExpensesClient({
         <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Confirm Expense</DialogTitle>
+              <DialogTitle>Confirm expense</DialogTitle>
               <DialogDescription>
-                AI extracted the following details. Review and edit before saving.
+                Check the details below and edit anything that looks off before saving.
               </DialogDescription>
             </DialogHeader>
             {parsedData && (
@@ -283,7 +280,7 @@ export default function ExpensesClient({
                 )}
                 {parsedData.confidence !== undefined && parsedData.confidence < 0.7 && (
                   <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm px-3 py-2 rounded-md">
-                    ⚠️ AI confidence is low ({Math.round((parsedData.confidence ?? 0) * 100)}%). Please review carefully.
+                    Low confidence ({Math.round((parsedData.confidence ?? 0) * 100)}%). Double-check these details.
                   </div>
                 )}
               </div>

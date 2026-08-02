@@ -10,8 +10,8 @@ const fontOutfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "AI Financial Habit Coach",
-  description: "Understand your spending, improve your habits.",
+  title: "HabitCoach",
+  description: "Track expenses, set savings goals, and stay on top of your spending.",
 };
 
 export default function RootLayout({

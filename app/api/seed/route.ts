@@ -86,7 +86,7 @@ export async function POST() {
     // --- Realistic Goals ---
     const goals = [
       { user_id: uid, title: "MacBook Pro M4", target_amount: 180000, current_amount: 42000, status: "active", deadline: new Date(now.getFullYear(), now.getMonth() + 8, 1).toISOString() },
-      { user_id: uid, title: "Goa Trip 🏖️", target_amount: 35000, current_amount: 18500, status: "active", deadline: new Date(now.getFullYear(), 11, 20).toISOString() },
+      { user_id: uid, title: "Goa Trip", target_amount: 35000, current_amount: 18500, status: "active", deadline: new Date(now.getFullYear(), 11, 20).toISOString() },
       { user_id: uid, title: "Emergency Fund (6 months)", target_amount: 300000, current_amount: 95000, status: "active", deadline: new Date(now.getFullYear() + 1, 5, 1).toISOString() },
       { user_id: uid, title: "New Bike Upgrade", target_amount: 120000, current_amount: 120000, status: "completed", deadline: new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString() },
     ];

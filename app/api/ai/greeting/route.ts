@@ -40,12 +40,12 @@ export async function GET() {
     const currency = profile?.currency || "INR";
     const nameStr = profile?.name ? `The user's name is ${profile.name}. Greet them by name.` : `You do not know the user's name. Greet them with a friendly "Hi there!". Do NOT use placeholders like [username].`;
 
-    const prompt = `You are HabitCoach, a friendly financial AI. 
-Generate a short (1-2 sentences max), highly personalized, and enthusiastic opening greeting for the user.
+    const prompt = `You are HabitCoach, a practical money coach.
+Write a short greeting (1-2 sentences).
 ${nameStr}
-So far this month, they have spent ${totalSpent} ${currency}.
-IMPORTANT: Always format money with the exact currency code provided (${currency}). Do NOT use the dollar sign ($) unless the currency is explicitly USD.
-Do not ask how you can help (the chat interface already implies they can ask questions). Just give a warm welcome and a quick encouraging observation about their spending.`;
+This month they have spent ${totalSpent} ${currency}.
+Use the currency code ${currency} for any money amounts. Do not use $ unless currency is USD.
+Do not ask how you can help. Keep the tone calm and useful.`;
 
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -57,7 +57,6 @@ Do not ask how you can help (the chat interface already implies they can ask que
     const displayName = profile?.name || "there";
     let greeting = completion.choices[0]?.message?.content || `Hey ${displayName}! Ready to master your finances today?`;
     
-    // Foolproof regex to strip out any hallucinated placeholders the AI might stubbornly include
     greeting = greeting.replace(/,?\s*\[username\]/gi, '').replace(/,?\s*\[name\]/gi, '');
 
     return NextResponse.json({ greeting });

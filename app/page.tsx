@@ -3,113 +3,92 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/Navbar";
-import { ArrowRight, Brain, Target, TrendingUp, Sparkles, LogIn } from "lucide-react";
+import { ArrowRight, MessageSquare, Target, BarChart3, LogIn } from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      
+
       <main className="flex-1">
-        <section className="relative overflow-hidden pt-24 pb-32 lg:pt-36 lg:pb-40">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"></div>
-          
+        <section className="relative overflow-hidden pt-24 pb-28 lg:pt-32 lg:pb-36">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+
           <div className="container mx-auto px-4 md:px-6 flex flex-col items-center text-center">
-            <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm text-primary mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <Sparkles className="mr-2 h-4 w-4" />
-              <span>Meet your new AI Financial Coach</span>
-            </div>
-            
-            <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              Understand your spending, <br className="hidden md:inline" />
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                improve your habits.
-              </span>
+            <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+              Track spending.
+              <br className="hidden sm:block" />
+              <span className="text-primary">Build better habits.</span>
             </h1>
-            
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
-              HabitCoach uses advanced AI to engage you in natural conversations about your finances. 
-              Break bad habits and reach your goals without the stress of manual tracking.
+
+            <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
+              HabitCoach helps you log expenses quickly, set savings goals, and stay on top of where your money goes.
             </p>
-            
-            <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+
+            <div className="mt-10 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
               <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto rounded-full text-base h-12 px-8">
-                  Start Free
+                  Create account
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/login" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full text-base h-12 px-8">
-                  Login 
+                  Log in
                   <LogIn className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>
-            
-            <div className="mt-20 w-full max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-              <div className="relative rounded-2xl border border-border/50 bg-card/50 glass shadow-2xl p-4 sm:p-8">
-                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none rounded-2xl" />
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="flex flex-col gap-4 w-full md:w-2/3 items-start">
-                    <div className="bg-primary/10 text-foreground px-4 py-3 rounded-2xl rounded-bl-sm max-w-[80%] text-left text-sm md:text-base border border-primary/20">
-                      Spent ₹350 on tea and cigarettes today. Am I budgeting well this week? 
-                    </div>
-                    <div className="bg-muted px-4 py-3 rounded-2xl rounded-br-sm max-w-[80%] self-end text-left text-sm md:text-base border border-border">
-                      <div className="font-semibold text-primary text-xs mb-1">AI Coach</div>
-                      I&apos;ve logged your expense! You&apos;re currently slightly over budget for &apos;Impulse Buys&apos;. 
-                      Consider skipping takeout on Friday so we can stay on track for your Laptop savings goal! 🎯
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/3 flex flex-col gap-4 border-l border-border/50 pl-0 md:pl-6 pt-6 md:pt-0">
-                    <div className="flex flex-col text-left">
-                      <span className="text-sm font-medium text-muted-foreground">Today&apos;s Insight</span>
-                      <span className="font-semibold text-lg text-foreground mt-1">
-                        You spend 34% more on weekends!
-                      </span>
-                    </div>
-                  </div>
+
+            <div className="mt-16 w-full max-w-3xl mx-auto rounded-2xl border border-border/60 bg-card/60 p-6 sm:p-8 text-left">
+              <p className="text-sm text-muted-foreground mb-4">Example</p>
+              <div className="space-y-3">
+                <div className="bg-primary/10 px-4 py-3 rounded-2xl rounded-bl-sm max-w-[90%] text-sm border border-primary/20">
+                  Spent ₹350 on tea and snacks today
+                </div>
+                <div className="bg-muted px-4 py-3 rounded-2xl rounded-br-sm max-w-[90%] ml-auto text-sm border border-border">
+                  Logged under Food &amp; Drinks. You&apos;ve spent ₹1,240 in that category this week.
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="py-20 bg-secondary/50">
+        <section className="py-20 bg-secondary/40">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Not just an expense tracker</h2>
-              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                Discover why your money goes where it does. Our AI creates meaningful financial memories out of your daily input.
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight">What you get</h2>
+              <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+                Simple tools for day-to-day money tracking.
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
-                <div className="p-3 bg-primary/10 rounded-full mb-4">
-                  <Brain className="h-6 w-6 text-primary" />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              <div className="text-center p-2">
+                <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <BarChart3 className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">AI-Powered Memory</h3>
+                <h3 className="text-lg font-semibold mb-2">Expense tracking</h3>
                 <p className="text-muted-foreground text-sm">
-                  We don&apos;t just log numbers. The coach learns your habits, preferences, and recurring pain points.
+                  Add purchases in plain language or review your history anytime.
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
-                <div className="p-3 bg-primary/10 rounded-full mb-4">
-                  <Target className="h-6 w-6 text-primary" />
+              <div className="text-center p-2">
+                <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <Target className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Goal Centric</h3>
+                <h3 className="text-lg font-semibold mb-2">Savings goals</h3>
                 <p className="text-muted-foreground text-sm">
-                  Whether quitting smoking or saving for a laptop, every expense is evaluated against your core objectives.
+                  Set a target, add money over time, and see how close you are.
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center p-6 bg-card rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
-                <div className="p-3 bg-primary/10 rounded-full mb-4">
-                  <TrendingUp className="h-6 w-6 text-primary" />
+              <div className="text-center p-2">
+                <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <MessageSquare className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Behavioral Insights</h3>
+                <h3 className="text-lg font-semibold mb-2">Money coach</h3>
                 <p className="text-muted-foreground text-sm">
-                  Receive personalized, unbiased observations without judgment, backed by your actual spending data.
+                  Ask questions about your spending and get practical next steps.
                 </p>
               </div>
             </div>
@@ -117,9 +96,9 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t py-12 bg-background">
-        <div className="container mx-auto px-4 md:px-6 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} HabitCoach AI. All rights reserved.</p>
+      <footer className="border-t py-10 bg-background">
+        <div className="container mx-auto px-4 md:px-6 text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} HabitCoach</p>
         </div>
       </footer>
     </div>

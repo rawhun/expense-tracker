@@ -206,7 +206,7 @@ export default function GoalsClient({
                       </div>
                     </div>
                     <CardTitle>{goal.title}</CardTitle>
-                    {isCompleted && <p className="text-xs text-green-600 font-medium">🎉 Goal achieved!</p>}
+                    {isCompleted && <p className="text-xs text-green-600 font-medium">Goal reached</p>}
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-between text-sm mb-2">
